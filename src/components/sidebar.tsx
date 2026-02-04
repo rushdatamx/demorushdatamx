@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import {
@@ -53,9 +54,13 @@ export function Sidebar() {
       {/* Logo */}
       <div className="h-14 flex items-center px-4 border-b border-border">
         <div className="flex items-center gap-2">
-          <div className="w-6 h-6 rounded bg-primary flex items-center justify-center">
-            <span className="text-xs font-bold text-primary-foreground">R</span>
-          </div>
+          <Image
+            src="/rushdata-logo.png"
+            alt="RushData"
+            width={28}
+            height={28}
+            className="object-contain"
+          />
           <span className="font-semibold text-sm">RushData</span>
         </div>
       </div>
