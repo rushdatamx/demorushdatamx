@@ -1,7 +1,11 @@
 {
   "kpis": {
     "ventas_totales": 849600.29,
+    "ventas_anterior": 642496.33,
+    "variacion_ventas": 32.2,
     "unidades_vendidas": 32271,
+    "unidades_anterior": 20045,
+    "variacion_unidades": 61.0,
     "inventario_costo": 703799.19,
     "inventario_precio": 914617.75,
     "unidades_inventario": 36692,
@@ -8442,7 +8446,7 @@
   ],
   "briefing": {
     "titulo": "BRIEFING PARA REUNION CON COMPRADOR - GALLETAS CRUNCH",
-    "fecha_generacion": "2026-02-03 20:22",
+    "fecha_generacion": "2026-02-03 20:36",
     "periodo_analisis": "23/12/2025 - 22/01/2026",
     "secciones": [
       {

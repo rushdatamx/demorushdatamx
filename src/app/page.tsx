@@ -6,7 +6,10 @@ import {
   AlertTriangle,
   Clock,
   TrendingUp,
+  TrendingDown,
   Store,
+  ArrowUpRight,
+  ArrowDownRight,
 } from "lucide-react";
 import dashboardData from "../../public/data/dashboard.json";
 import { SalesChart } from "@/components/sales-chart";
@@ -43,27 +46,43 @@ export default function DashboardPage() {
             <div className="text-2xl font-bold">
               ${kpis.ventas_totales.toLocaleString("es-MX")}
             </div>
-            <p className="text-xs text-muted-foreground mt-1">
-              {kpis.unidades_vendidas.toLocaleString()} unidades
-            </p>
+            <div className="flex items-center gap-1 mt-1">
+              {kpis.variacion_ventas >= 0 ? (
+                <ArrowUpRight className="h-3 w-3 text-green-600" />
+              ) : (
+                <ArrowDownRight className="h-3 w-3 text-red-600" />
+              )}
+              <span className={`text-xs font-medium ${kpis.variacion_ventas >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                {kpis.variacion_ventas >= 0 ? '+' : ''}{kpis.variacion_ventas}%
+              </span>
+              <span className="text-xs text-muted-foreground">vs mes anterior</span>
+            </div>
           </CardContent>
         </Card>
 
-        {/* Inventario */}
+        {/* Unidades Vendidas */}
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground">
-              Inventario
+              Unidades Vendidas
             </CardTitle>
             <Package className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              ${kpis.inventario_costo.toLocaleString("es-MX")}
+              {kpis.unidades_vendidas.toLocaleString()}
             </div>
-            <p className="text-xs text-muted-foreground mt-1">
-              {kpis.unidades_inventario.toLocaleString()} unidades en stock
-            </p>
+            <div className="flex items-center gap-1 mt-1">
+              {kpis.variacion_unidades >= 0 ? (
+                <ArrowUpRight className="h-3 w-3 text-green-600" />
+              ) : (
+                <ArrowDownRight className="h-3 w-3 text-red-600" />
+              )}
+              <span className={`text-xs font-medium ${kpis.variacion_unidades >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                {kpis.variacion_unidades >= 0 ? '+' : ''}{kpis.variacion_unidades}%
+              </span>
+              <span className="text-xs text-muted-foreground">vs mes anterior</span>
+            </div>
           </CardContent>
         </Card>
 

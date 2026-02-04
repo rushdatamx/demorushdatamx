@@ -12,10 +12,13 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Package, AlertCircle, AlertTriangle, CheckCircle } from "lucide-react";
+import { Package, AlertCircle, AlertTriangle, CheckCircle, Store, ChevronDown } from "lucide-react";
 import dashboardData from "../../../public/data/dashboard.json";
 
 type StatusFilter = "all" | "ok" | "bajo" | "critico" | "agotado";
+
+// Obtener lista única de tiendas
+const uniqueStores = Array.from(new Set(dashboardData.inventario.map(i => i.tienda))).sort();
 
 const statusConfig = {
   ok: {
@@ -44,6 +47,7 @@ export default function InventarioPage() {
   const { inventario, kpis } = dashboardData;
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
   const [searchTerm, setSearchTerm] = useState("");
+  const [selectedStore, setSelectedStore] = useState<string>("all");
 
   // Calcular estadísticas
   const stats = useMemo(() => {
@@ -60,13 +64,19 @@ export default function InventarioPage() {
   const filteredData = useMemo(() => {
     return inventario.filter((item) => {
       const matchesStatus = statusFilter === "all" || item.estado === statusFilter;
+      const matchesStore = selectedStore === "all" || item.tienda === selectedStore;
       const matchesSearch =
         searchTerm === "" ||
         item.producto.toLowerCase().includes(searchTerm.toLowerCase()) ||
         item.tienda.toLowerCase().includes(searchTerm.toLowerCase());
-      return matchesStatus && matchesSearch;
+      return matchesStatus && matchesStore && matchesSearch;
     });
-  }, [inventario, statusFilter, searchTerm]);
+  }, [inventario, statusFilter, selectedStore, searchTerm]);
+
+  // Calcular valor total del inventario filtrado
+  const filteredTotalValue = useMemo(() => {
+    return filteredData.reduce((sum, item) => sum + item.costo, 0);
+  }, [filteredData]);
 
   // Formatear nombre del producto
   const formatProductName = (fullName: string) => {
@@ -159,14 +169,40 @@ export default function InventarioPage() {
       </div>
 
       {/* Search and Filters */}
-      <div className="flex flex-col sm:flex-row gap-4 mb-6">
-        <input
-          type="text"
-          placeholder="Buscar por producto o tienda..."
-          className="flex h-10 w-full sm:w-80 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-        />
+      <div className="flex flex-col gap-4 mb-6">
+        <div className="flex flex-col sm:flex-row gap-4">
+          <input
+            type="text"
+            placeholder="Buscar por producto..."
+            className="flex h-10 w-full sm:w-64 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+
+          {/* Dropdown de Tienda */}
+          <div className="relative">
+            <select
+              value={selectedStore}
+              onChange={(e) => setSelectedStore(e.target.value)}
+              className="flex h-10 w-full sm:w-64 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring appearance-none cursor-pointer"
+            >
+              <option value="all">Todas las tiendas</option>
+              {uniqueStores.map((store) => (
+                <option key={store} value={store}>
+                  {store}
+                </option>
+              ))}
+            </select>
+            <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+          </div>
+
+          {/* Valor total filtrado */}
+          <div className="flex items-center gap-2 px-3 py-2 bg-muted/50 rounded-md">
+            <span className="text-sm text-muted-foreground">Valor filtrado:</span>
+            <span className="text-sm font-semibold">${filteredTotalValue.toLocaleString("es-MX")}</span>
+          </div>
+        </div>
+
         <div className="flex gap-2 flex-wrap">
           <Button
             variant={statusFilter === "all" ? "default" : "outline"}

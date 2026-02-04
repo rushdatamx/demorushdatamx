@@ -13,7 +13,12 @@ import {
   CheckCircle,
   ArrowRight,
   FileText,
+  Download,
+  Copy,
+  Check,
 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { useState } from "react";
 import dashboardData from "../../../public/data/dashboard.json";
 
 const sectionIcons = {
@@ -52,16 +57,77 @@ const sectionColors = {
 
 export default function InsightsPage() {
   const { briefing, kpis } = dashboardData;
+  const [copied, setCopied] = useState(false);
+
+  const handleCopyToClipboard = () => {
+    const text = `
+${briefing.titulo}
+Fecha: ${briefing.fecha_generacion}
+Período: ${briefing.periodo_analisis}
+
+RESUMEN EJECUTIVO
+${briefing.resumen_ejecutivo}
+
+${briefing.secciones.map(s => `${s.titulo}\n${s.puntos.map(p => `• ${p}`).join('\n')}`).join('\n\n')}
+
+ACCIONES SUGERIDAS
+1. Urgente: Resolver quiebres de stock (${kpis.tiendas_con_quiebre} tiendas afectadas)
+2. Importante: Solicitar aumento de pedido mínimo (DOS promedio: ${kpis.dos_promedio} días)
+3. Oportunidad: Impulsar productos estrella
+    `.trim();
+
+    navigator.clipboard.writeText(text);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  const handleExportPDF = () => {
+    // En una implementación real usaríamos una librería como jsPDF
+    // Para la demo, simulamos la descarga
+    alert('Función de exportación a PDF - En una implementación completa, esto generaría un PDF descargable.');
+    window.print();
+  };
 
   return (
     <div className="p-8 max-w-4xl mx-auto">
       {/* Header */}
       <div className="mb-8">
-        <div className="flex items-center gap-2 mb-2">
-          <Sparkles className="h-5 w-5 text-purple-500" />
-          <Badge className="bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200">
-            Generado por IA
-          </Badge>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2 mb-2">
+            <Sparkles className="h-5 w-5 text-purple-500" />
+            <Badge className="bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200">
+              Generado por IA
+            </Badge>
+          </div>
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleCopyToClipboard}
+              className="gap-2"
+            >
+              {copied ? (
+                <>
+                  <Check className="h-4 w-4 text-green-600" />
+                  Copiado
+                </>
+              ) : (
+                <>
+                  <Copy className="h-4 w-4" />
+                  Copiar
+                </>
+              )}
+            </Button>
+            <Button
+              variant="default"
+              size="sm"
+              onClick={handleExportPDF}
+              className="gap-2"
+            >
+              <Download className="h-4 w-4" />
+              Exportar PDF
+            </Button>
+          </div>
         </div>
         <h1 className="text-2xl font-semibold text-foreground">
           {briefing.titulo}
